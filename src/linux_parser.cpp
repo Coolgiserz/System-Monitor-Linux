@@ -2,8 +2,9 @@
 #include <unistd.h>
 #include <string>
 #include <vector>
-
+#include <iostream>
 #include "linux_parser.h"
+#define printVariableNameAndValue(x) std::cout<<"The name of variable **"<<(#x)<<"** and the value of variable is => "<<x<<"\n"
 
 using std::stof;
 using std::string;
@@ -299,7 +300,7 @@ string LinuxParser::User(int pid) {
 }
 
 // Read and return the uptime of a process
-// 返回启动时间
+// reference: https://man7.org/linux/man-pages/man5/proc.5.html
 long LinuxParser::UpTime(int pid) { 
   std::ifstream filestream(kProcDirectory+std::to_string(pid)+kStatFilename);
   if(filestream.is_open()){
@@ -308,11 +309,11 @@ long LinuxParser::UpTime(int pid) {
     std::getline(filestream, line);
     int i = 0;
     std::istringstream stringstream(line);
-    while(i!=22){
+    while(i!=22){//when i equal to 22, this loop will stop. So I get the 22nd token, not the 23rd.
       stringstream >> token;
       i++;
     }
-    return stol(token)/sysconf(_SC_CLK_TCK);
+    return LinuxParser::UpTime()-stol(token)/sysconf(_SC_CLK_TCK);//stol(token)/sysconf(_SC_CLK_TCK) measure "time the process started after system boot"
   }
 
   return 0; 
