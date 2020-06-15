@@ -22,9 +22,7 @@ vector<Process>& System::Processes() {
     vector<int> pids = LinuxParser::Pids();
     processes_.clear();
     for(int pid: pids){
-        Process p = Process(pid);
-        p.CpuUtilization(LinuxParser::ActiveJiffies(pid), LinuxParser::Jiffies());
-        processes_.emplace_back(p);
+        processes_.emplace_back(pid);//after that, constructor of the class Process gets called and return the Process Object
     }
     std::sort(processes_.begin(), processes_.end(), std::greater<Process>());
     return processes_; 

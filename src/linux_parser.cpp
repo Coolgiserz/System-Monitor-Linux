@@ -79,13 +79,13 @@ float LinuxParser::MemoryUtilization() {
   if(filestream.is_open()){
 
       while(filestream >> token){
-        if(token=="MemTotal:"){
+        if(token==LinuxParser::filterMemTotal){
           filestream >> token;
           mem_total = stof(token);
-        }else if(token=="MemFree:"){
+        }else if(token==LinuxParser::filterMemFree){
           filestream >> token;
           mem_free = stof(token);
-        }else if(token=="Buffers:"){
+        }else if(token==LinuxParser::filterBuffer){
           filestream >> token;
           mem_buffer = stof(token);
         }
@@ -178,7 +178,7 @@ vector<string> LinuxParser::CpuUtilization() {
     std::getline(filestream, line);
     std::istringstream stringstream(line);
     if(stringstream >> token){
-      if(token == "cpu"){
+      if(token == LinuxParser::filterCpu){
          while(stringstream >> token){
            cpu_times.push_back(token);
          }
@@ -187,7 +187,7 @@ vector<string> LinuxParser::CpuUtilization() {
       }
     }
   }
-  return {};
+  return {};//https://stackoverflow.com/questions/1626597/should-functions-return-null-or-an-empty-object
 }
 
 // TODO: Read and return the total number of processes
@@ -202,7 +202,7 @@ int LinuxParser::TotalProcesses() {
     while(std::getline(fstream, line)){
       std::istringstream str_stream(line);
       while(str_stream>>key>>value){
-        if(key=="processes"){
+        if(key==LinuxParser::filterProcess){
           total_processes = stoi(value);
           return total_processes;
         }
@@ -213,7 +213,7 @@ int LinuxParser::TotalProcesses() {
 
 }
 
-// TODO: Read and return the number of running processes
+// Read and return the number of running processes
 int LinuxParser::RunningProcesses() { 
     int running_processes{0};
     std::string line;
@@ -221,7 +221,7 @@ int LinuxParser::RunningProcesses() {
     std::ifstream fstream(kProcDirectory+kStatFilename);
     while(std::getline(fstream, line)){
       std::istringstream str_stream(line);
-      if(str_stream>>token && token=="procs_running"){
+      if(str_stream>>token && token==LinuxParser::filterRunningProcess){
           if(str_stream>>token){
           running_processes = stoi(token);
           return running_processes;
@@ -238,7 +238,7 @@ string LinuxParser::Command(int pid) {
   if(filestream.is_open()){
     std::string line;
     if(std::getline(filestream, line)){
-      return line;
+      return line.substr(0, 20);
     }
   }
   return string();
@@ -251,7 +251,7 @@ string LinuxParser::Ram(int pid) {
                         LinuxParser::kStatusFilename);
     if (stream.is_open()) {
       while (stream >> token) {
-        if (token == "VmSize:") {
+        if (token == LinuxParser::filterProcessMem) {
           if (stream >> token) return std::to_string(stoi(token) / 1024);
         }
       }
@@ -268,7 +268,7 @@ string LinuxParser::Uid(int pid) {
     while(std::getline(filestream, line)){
        std::istringstream stringstream(line);
        if(stringstream >> token){
-         if(token == "Uid:"){
+         if(token == LinuxParser::filterUid){
            stringstream >> token;
            return token;
          }

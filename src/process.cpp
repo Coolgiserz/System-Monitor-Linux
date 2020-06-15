@@ -10,7 +10,10 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-Process::Process(int pid): _pid(pid){}
+// constructor
+Process::Process(int pid): _pid(pid){
+    this->CpuUtilization(LinuxParser::ActiveJiffies(_pid), LinuxParser::Jiffies());
+}
 // Return this process's ID
 int Process::Pid() { return _pid; }
 
