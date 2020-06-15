@@ -11,6 +11,7 @@ using std::string;
 using std::to_string;
 using std::vector;
 
+
 // Read and return the operation system
 string LinuxParser::OperatingSystem() {
   string line;
@@ -79,6 +80,7 @@ float LinuxParser::MemoryUtilization() {
   if(filestream.is_open()){
 
       while(filestream >> token){
+     
         if(token==LinuxParser::filterMemTotal){
           filestream >> token;
           mem_total = stof(token);
@@ -193,7 +195,7 @@ vector<string> LinuxParser::CpuUtilization() {
 // TODO: Read and return the total number of processes
 int LinuxParser::TotalProcesses() { 
 
-    int total_processes{0};
+  int total_processes{0};
   std::string line;
   std::string key;
   std::string value;
